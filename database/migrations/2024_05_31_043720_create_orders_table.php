@@ -17,8 +17,8 @@ return new class extends Migration
             $table->foreignId('product_id')->constrained('products')->cascadeOnUpdate()->cascadeOnDelete();
             $table->string('address_to');
             $table->string('courier');
-            $table->integer('total');
             $table->integer('quatity');
+            $table->integer('total');
             $table->string('payment');
             $table->boolean('status')->default(false);
             $table->timestamps();
