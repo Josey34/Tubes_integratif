@@ -29,10 +29,16 @@
                 <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
                 <button class="btn btn-outline-success" type="submit">Search</button>
             </form>
-
         </div>
     </div>
-    <form action="/login" class="d-flex">
-        <button class="btn btn-primary" type="submit">Login</button>
-    </form>
+    @auth
+        <form action="/logout" method="POST" class="d-flex">
+            @csrf
+            <button class="btn btn-danger" type="submit">Logout</button>
+        </form>
+    @else
+        <form action="/login" method="GET" class="d-flex">
+            <button class="btn btn-primary" type="submit">Login</button>
+        </form>
+    @endauth
 </nav>
