@@ -35,6 +35,7 @@ class ProductController extends Controller
             'description' => 'required',
             'price' => 'required',
             'weight' => 'required',
+            'address_from' => 'required',
             'stock' => 'required',
             'image' => 'required'
         ]);
@@ -60,7 +61,9 @@ class ProductController extends Controller
      */
     public function show(Product $product)
     {
-        return view('/products', compact('product'));
+        $productId = $product->id;
+        $product = Product::findOrFail($productId);
+        return view('products.show', compact('product'));
     }
 
     /**

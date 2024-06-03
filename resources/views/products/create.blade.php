@@ -28,6 +28,10 @@
                             <input type="number" name="weight" placeholder="weight" class="form-control">
                         </div>
                         <div class="form-group">
+                            <label for="">Asal kota</label>
+                            <input type="text" name="address_from" placeholder="address_from" class="form-control">
+                        </div>
+                        <div class="form-group">
                             <label for="">Stock</label>
                             <input type="number" name="stock" placeholder="Stock" class="form-control">
                         </div>
