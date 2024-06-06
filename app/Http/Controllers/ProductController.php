@@ -14,7 +14,7 @@ class ProductController extends Controller
     public function index()
     {
         $products = Product::all();
-        return view('home', compact('products'));
+        return view('product', compact('products'));
     }
 
     /**
@@ -41,7 +41,7 @@ class ProductController extends Controller
         ]);
 
 
-        if($request->file('image')) {
+        if ($request->file('image')) {
             $validateData['image'] = $request->file('image')->store('post-images');
         }
 
@@ -69,17 +69,51 @@ class ProductController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $id)
+    public function edit(Product $product)
     {
-        //
+        return view('products.edit', compact('product'));
     }
+
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request, Product $product)
     {
-        //
+        $validateData = $request->validate([
+            'product_name' => 'required|max:255',
+            'description' => 'required',
+            'price' => 'required',
+            'weight' => 'required',
+            'address_from' => 'required',
+            'stock' => 'required',
+            'image' => 'required'
+        ]);
+
+
+        if ($request->file('image')) {
+            // Delete old image if exists
+            if ($product->image) {
+                Storage::delete($product->image);
+            }
+            $validateData['image'] = $request->file('image')->store('post-images');
+        } else {
+            $validateData['image'] = $product->image; // Keep old image if new image is not uploaded
+        }
+
+        // $product->update([
+        //     'product_name' => $request->product_name,
+        //     'description' => $request->description,
+        //     'price' => $request->price,
+        //     'weight' => $request->weight,
+        //     'address_from' => $request->address_from,
+        //     'stock' => $request->stock,
+        //     'image' => $request->image
+        // ]);
+
+        $product->update($validateData);
+
+        return redirect()->route('product.show', $product->id)->with('success', 'Product has been updated');
     }
 
     /**
@@ -87,13 +121,13 @@ class ProductController extends Controller
      */
     public function destroy(Product $product)
     {
-        if($product->image) {
+        if ($product->image) {
             Storage::delete($product->image);
         }
 
         Product::destroy($product->id);
 
-        return redirect('/')->with('success', 'Post has been deleted');
+        return redirect('/product')->with('success', 'Product has been deleted');
     }
 
 }

@@ -10,7 +10,7 @@ use App\Http\Controllers\RegisterController;
 //     return view('Home');
 // });
 
-Route::get('/', [ProductController::class, 'index'])->name('home');
+// Route::get('/', [ProductController::class, 'index'])->name('home');
 
 Route::get('/login', [LoginController::class, 'index'])->name('login');
 Route::post('/login', [LoginController::class, 'authenticate'])->name('authenticate');
@@ -26,3 +26,4 @@ Route::resource('/orders', OrderController::class);
 Route::post('/orders/add-to-cart/{product}', [OrderController::class, 'addToCart'])->name('orders.add_to_cart');
 Route::post('/checkout/{product_id}', [OrderController::class, 'checkout'])->name('checkout');
 Route::post('/process_checkout', [OrderController::class, 'checkout']);
+
