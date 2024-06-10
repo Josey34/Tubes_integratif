@@ -6,7 +6,7 @@
         <div class="card m-3" style="width: 18rem;">
             <img src="{{ url('/storage/' . $product->image) }}" alt="Card image cap" class="card-img-top">
             <div class="card-body">
-                <h5 class="card-title">{{$product->product_name }}</h5>
+                <h5 class="card-title">{{ $product->product_name }}</h5>
                 <p class="card-text">{{ $product->description }}</p>
                 <p>Price: {{ $product->price }}</p>
                 <p>Weight: {{ $product->weight }}</p>
@@ -16,35 +16,38 @@
         </div>
 
         <!-- Checkout form -->
-        <form action="" method="">
+        <form action="{{ route('orders.hitung_ongkir') }}" method="POST">
             @csrf
             <input type="hidden" name="product_id" value="{{ $product->id }}">
+            <input type="hidden" name="address_from" value="{{ $product->address_from }}">
+            <input type="hidden" name="weight" value="{{ $product->weight }}">
 
             <div class="form-group">
-                <label for="address_to">Address To:</label>
-                <input type="text" class="form-control" id="address_to" name="address_to">
+                <label for="destination">Destination City:</label>
+                <select class="form-control" id="destination" name="destination">
+                    @foreach ($cities as $city)
+                        <option value="{{ $city['city_name'] }}">{{ $city['city_name'] }}</option>
+                    @endforeach
+                </select>
             </div>
 
             <div class="form-group">
-                <label for="courier">Courier:</label>
-                <input type="text" class="form-control" id="courier" name="courier">
+                <label for="courier">Kurir</label>
+                <select name="courier" id="courier" class="form-control" required>
+                    <option value="">Pilih Kurir</option>
+                    <option value="jne">JNE</option>
+                    <option value="pos">POS</option>
+                    <option value="tiki">TIKI</option>
+                </select>
             </div>
 
             <div class="form-group">
                 <label for="quantity">Quantity:</label>
-                <input type="number" class="form-control" id="quantity" name="quantity" value="{{ $order->quantity }}">
+                <input type="number" class="form-control" id="quantity" name="quantity"
+                    value="{{ $order->quantity ?? 1 }}">
             </div>
 
-            <!-- Total will be calculated based on product price and quantity -->
-            <input type="hidden" name="total" value="{{ $product->price * ($order->quantity ?? 1) }}">
-
-            <div class="form-group">
-                <label for="payment">Payment:</label>
-                <input type="text" class="form-control" id="payment" name="payment" value="pending" readonly>
-            </div>
-
-            <button type="submit" class="btn btn-primary">Checkout</button>
+            <button type="submit" class="btn btn-primary">Order</button>
         </form>
-
     </div>
 @endsection

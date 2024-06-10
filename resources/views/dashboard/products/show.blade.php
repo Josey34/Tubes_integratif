@@ -1,6 +1,7 @@
-@extends('layouts.main')
+@extends('dashboard.layouts.main')
 
 @section('container')
+<main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
     <div class="container">
         <div class="row justify-content-center">
             <div class="col-lg-5">
@@ -14,21 +15,22 @@
                         <p>Weight: {{ $product->weight }}</p>
                         <p>Address from: {{ $product->address_from }}</p> <!-- This will display the city name -->
                         <p>Stock: {{ $product->stock }}</p>
-                        <a href="{{ route('product.edit', $product->id) }}" class="btn btn-warning">Edit Product</a>
-                        <form action="{{ route('product.destroy', $product->id) }}" method="POST" style="display:inline;">
+                        <a href="/dashboard/products/{{ $product->id }}/edit" class="btn btn-warning">Edit Product</a>
+                        <form action="/dashboard/products/{{ $product->id }}" method="POST" style="display:inline;">
                             @csrf
                             @method('DELETE')
                             <button type="submit" class="btn btn-danger" onclick="return confirm('Are you sure?')">Delete
                                 Product</button>
                         </form>
-                        <form action="{{ route('orders.checkout', $product->id) }}" method="POST" style="display:inline;">
+                        {{-- <form action="{{ route('orders.checkout', $product->id) }}" method="POST" style="display:inline;">
                             @csrf
                             <button type="submit" class="btn btn-primary">Order</button>
-                        </form>
+                        </form> --}}
                     </div>
                 </div>
-                <a href="{{ route('product.index') }}" class="btn btn-secondary">Back to Product</a>
+                <a href="{{ route('dashboard.products.index') }}" class="btn btn-secondary">Back to Product</a>
             </div>
         </div>
     </div>
+</main>
 @endsection

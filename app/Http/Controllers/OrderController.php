@@ -7,6 +7,7 @@ use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Http;
 
 class OrderController extends Controller
 {
@@ -17,6 +18,8 @@ class OrderController extends Controller
 
         return view('orders.index', compact('orders', 'cart'));
     }
+
+    //
 
     public function addToCart($product_id)
     {
@@ -37,9 +40,8 @@ class OrderController extends Controller
                 'quantity' => $existingOrder->quantity + 1,
                 'total' => $existingOrder->total + $product->price
             ]);
-
         } else {
-            $order = Order::create([
+            Order::create([
                 'user_id' => $user_id,
                 'product_id' => $product_id,
                 'address_to' => 'address', // Update with actual address from user input
@@ -51,9 +53,7 @@ class OrderController extends Controller
             ]);
         }
 
-        $orders = Order::with('product')->get();
-
-        return redirect()->route('orders.index')->with('success', 'Product added to cart.');
+        return redirect()->route('orders.checkout', $product_id)->with('success', 'Product added to orders.');
     }
 
     public function checkout(Request $request, $productId)
@@ -61,12 +61,17 @@ class OrderController extends Controller
         $product = Product::findOrFail($productId);
         $user_id = Auth::id();
 
-        // Fetch the existing order for the user and product, if it exists
         $order = Order::where('user_id', $user_id)
             ->where('product_id', $productId)
             ->first();
 
-        return view('orders.checkout', compact('product', 'order'));
+        $response = Http::withHeaders([
+            'key' => '7b56cec1d370390a4028d16c89d266d9'
+        ])->get('https://api.rajaongkir.com/starter/city');
+
+        $cities = $response->json()['rajaongkir']['results'] ?? [];
+
+        return view('orders.checkout', compact('product', 'order', 'cities'));
     }
 
 
@@ -126,4 +131,76 @@ class OrderController extends Controller
 
         return redirect('/orders')->with('success', 'Order has been deleted');
     }
+
+    public function hitungOngkir(Request $request)
+    {
+        $user_id = Auth::id();
+        $product = Product::findOrFail($request->product_id);
+
+        // Fetch the cities
+        $response = Http::withHeaders([
+            'key' => '7b56cec1d370390a4028d16c89d266d9'
+        ])->get('https://api.rajaongkir.com/starter/city');
+        $responseArray = $response->json();
+        $cities = $responseArray['rajaongkir']['results'] ?? [];
+
+        // Calculate the shipping cost
+        $costResponse = Http::withHeaders([
+            'key' => '7b56cec1d370390a4028d16c89d266d9'
+        ])->post('https://api.rajaongkir.com/starter/cost', [
+                    'origin' => $request->address_from,
+                    'destination' => $request->destination,
+                    'weight' => $request->weight,
+                    'courier' => $request->courier,
+                ]);
+        $costArray = $costResponse->json();
+        if (isset($costArray['rajaongkir'])) {
+            $ongkir = $costArray['rajaongkir'];
+        } else {
+            $ongkir = [];
+        }
+
+        // dd($costArray);
+
+        // Get product details
+        $product = Product::findOrFail($request->product_id);
+        $quantity = $request->quantity;
+        $totalPrice = $product->price * $quantity;
+
+        // Calculate total payment
+        $totalPayment = $totalPrice;
+        if (isset($ongkir['results']) && count($ongkir['results']) > 0) {
+            $selectedService = $request->input('service'); // Get the selected service from the request
+            foreach ($ongkir['results'] as $result) {
+                if ($result['code'] == $request->courier) {
+                    foreach ($result['costs'] as $cost) {
+                        if ($cost['service'] == $selectedService) {
+                            $totalPayment += $cost['cost'][0]['value'];
+                        }
+                    }
+                }
+            }
+        }
+
+        // Create the order
+        $order = Order::create([
+            'user_id' => auth()->id(),
+            'product_id' => $product->id,
+            'address_to' => $request->destination,
+            'courier' => $request->courier,
+            'quantity' => $quantity,
+            'total' => $totalPayment,
+            'payment' => 'pending',
+            'status' => false
+        ]);
+
+        return view('orders.payment', ['order' => $order, 'ongkir' => $ongkir]);
+    }
+    public function payment(Order $order)
+    {
+        return view('orders.payment', compact('order'));
+    }
+
+
+
 }

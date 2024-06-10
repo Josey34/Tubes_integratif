@@ -1,8 +1,9 @@
-@extends('layouts.main')
+@extends('dashboard.layouts.main')
 
 @section('container')
 
 <div class="container">
+    <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
     <div class="row justify-content-center">
         <div class="col-md-8">
             <div class="card">
@@ -28,8 +29,12 @@
                             <input type="number" name="weight" placeholder="weight" class="form-control">
                         </div>
                         <div class="form-group">
-                            <label for="">Asal kota</label>
-                            <input type="text" name="address_from" placeholder="address_from" class="form-control">
+                            <label for="address_from">Asal Kota</label>
+                            <select name="address_from" class="form-control">
+                                @foreach($cities as $city)
+                                    <option value="{{ $city['city_name'] }}">{{ $city['city_name'] }}</option>
+                                @endforeach
+                            </select>
                         </div>
                         <div class="form-group">
                             <label for="">Stock</label>
@@ -46,5 +51,5 @@
         </div>
     </div>
 </div>
-
+</main>
 @endsection

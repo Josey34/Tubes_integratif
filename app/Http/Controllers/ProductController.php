@@ -5,16 +5,24 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Product;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Http;
 
 class ProductController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
+
+    public function dashboard_index()
+    {
+        return view('dashboard.products.index', [
+            'products' => Product::all()
+        ]);
+    }
+
     public function index()
     {
-        $products = Product::all();
-        return view('product', compact('products'));
+        return view('dashboard.index');
     }
 
     /**
@@ -22,7 +30,14 @@ class ProductController extends Controller
      */
     public function create()
     {
-        return view('products.create');
+        $response = Http::withHeaders([
+            'key' => '7b56cec1d370390a4028d16c89d266d9'
+        ])->get('https://api.rajaongkir.com/starter/city');
+
+        $responseArray = $response->json();
+        $cities = $responseArray['rajaongkir']['results'] ?? [];
+
+        return view('dashboard.products.create', compact('cities'));
     }
 
     /**
@@ -53,7 +68,7 @@ class ProductController extends Controller
 
         Product::create($validateData);
 
-        return redirect('product')->with('success', 'New post has been added');
+        return redirect('dashboard/products')->with('success', 'New post has been added');
     }
 
     /**
@@ -63,7 +78,7 @@ class ProductController extends Controller
     {
         $productId = $product->id;
         $product = Product::findOrFail($productId);
-        return view('products.show', compact('product'));
+        return view('dashboard.products.show', compact('product'));
     }
 
     /**
@@ -71,7 +86,17 @@ class ProductController extends Controller
      */
     public function edit(Product $product)
     {
-        return view('products.edit', compact('product'));
+        $product = Product::findOrFail($product->id);
+
+        // Fetch city list for the form
+        $response = Http::withHeaders([
+            'key' => '7b56cec1d370390a4028d16c89d266d9'
+        ])->get('https://api.rajaongkir.com/starter/city');
+
+        $responseArray = $response->json();
+        $cities = $responseArray['rajaongkir']['results'] ?? [];
+
+        return view('dashboard.products.edit', compact('product', 'cities'));
     }
 
 
@@ -113,7 +138,7 @@ class ProductController extends Controller
 
         $product->update($validateData);
 
-        return redirect()->route('product.show', $product->id)->with('success', 'Product has been updated');
+        return redirect()->route('dashboard.products.show', $product->id)->with('success', 'Product has been updated');
     }
 
     /**
@@ -127,7 +152,7 @@ class ProductController extends Controller
 
         Product::destroy($product->id);
 
-        return redirect('/product')->with('success', 'Product has been deleted');
+        return redirect('/dashboard/products')->with('success', 'Product has been deleted');
     }
 
 }

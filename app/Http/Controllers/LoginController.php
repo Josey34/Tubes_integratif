@@ -23,7 +23,7 @@ class LoginController extends Controller
         {
             $request->session()->regenerate();
 
-            return redirect()->intended('/');
+            return redirect()->intended('/product');
         }
         return back()->with('loginError', 'Login failed!');
     }
@@ -36,6 +36,6 @@ class LoginController extends Controller
 
         $request->session()->regenerateToken();
 
-        return redirect('/');
+        return redirect('/home');
     }
 }
