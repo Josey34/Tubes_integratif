@@ -25,10 +25,10 @@
                     </ul>
                 </li>
             </ul>
-            <form class="d-flex" action="{{ route('product.index') }}" method="GET">
+            {{-- <form class="d-flex" action="{{ route('product.index') }}" method="GET">
                 <input class="form-control me-2" type="search" placeholder="Search by name" aria-label="Search" name="search">
                 <button class="btn btn-outline-success" type="submit">Search</button>
-            </form>
+            </form> --}}
         </div>
     </div>
     @auth
