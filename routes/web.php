@@ -18,7 +18,6 @@ Route::get('/register', [RegisterController::class, 'index'])->name('register');
 Route::post('/register', [RegisterController::class, 'store'])->name('store_register');
 
 Route::middleware(['group-admin'])->group(function () {
-    // Admin specific routes
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard.index');
     Route::get('/dashboard/create', [DashboardController::class, 'create'])->name('dashboard.create');
     Route::post('/dashboard', [DashboardController::class, 'store'])->name('dashboard.store');
@@ -29,8 +28,6 @@ Route::middleware(['group-admin'])->group(function () {
 });
 
 Route::middleware(['auth'])->group(function () {
-    // Auth specific routes
-
     Route::get('/product', [ProductController::class, 'index'])->name('product.index');
     Route::get('/products/{product}', [ProductController::class, 'show'])->name('products.show');
 
@@ -41,5 +38,4 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/orders/ongkir', [OrderController::class, 'ongkir'])->name('orders.ongkir');
     Route::post('/orders/hitung_ongkir', [OrderController::class, 'hitungOngkir'])->name('orders.hitung_ongkir');
     Route::get('orders.payment', [OrderController::class, 'payment'])->name('orders.payment');
-
 });
