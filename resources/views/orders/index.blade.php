@@ -11,37 +11,35 @@
             @forelse ($orders as $order)
                 <div class="col mb-4">
                     <div class="card h-100">
-                        @if ($order->product)
-                            <img src="{{ url('/storage/' . $order->product->image) }}" alt="Card image cap"
+                        @if ($order->product && $order->product->image)
+                            <img src="{{ url('/storage/' . $order->product->image) }}" alt="Product Image"
                                 class="card-img-top">
                         @else
                             <p>No product image available</p>
                         @endif
-            @endif
-            <div class="card-body">
-                <h5 class="card-title">{{ $order->product ? $order->product->product_name : 'Product not found' }}</h5>
-                <p class="card-text">Quantity: {{ $order->quantity }}</p>
-                <p class="card-text">Total: Rp. {{ $order->total }}</p>
-            </div>
-            <form action="{{ route('orders.index', $order->product->id) }}" method="POST"
-                class="d-flex justify-content-center">
-                @csrf
-                <button type="submit" class="btn btn-primary">Proceed to Checkout</button>
-            </form>
-        </div>
-    </div>
-
-    @empty
-        <div class="col">
-            <div class="alert alert-info" role="alert">
-                No orders available.
-            </div>
-        </div>
-        @endforelse
+                        <div class="card-body">
+                            <h5 class="card-title">{{ $order->product ? $order->product->product_name : 'Product not found' }}</h5>
+                            <p class="card-text">Quantity: {{ $order->quantity }}</p>
+                            <p class="card-text">Total: Rp. {{ $order->total }}</p>
+                        </div>
+                        <form action="{{ route('orders.checkout', $order->product->id) }}" method="POST"
+                            class="d-flex justify-content-center">
+                            @csrf
+                            <button type="submit" class="btn btn-primary">Proceed to Checkout</button>
+                        </form>
+                    </div>
+                </div>
+            @empty
+                <div class="col">
+                    <div class="alert alert-info" role="alert">
+                        No orders available.
+                    </div>
+                </div>
+            @endforelse
         </div>
 
         <div class="text-center mt-4">
 
         </div>
-        </div>
-    @endsection
+    </div>
+@endsection

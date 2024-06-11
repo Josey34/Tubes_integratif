@@ -1,3 +1,5 @@
+<!-- resources/views/orders/checkout.blade.php -->
+
 @extends('layouts.main')
 
 @section('container')
@@ -16,7 +18,7 @@
         </div>
 
         <!-- Checkout form -->
-        <form action="{{ route('orders.hitung_ongkir') }}" method="POST">
+        <form method="POST" action="/orders/payment">
             @csrf
             <input type="hidden" name="product_id" value="{{ $product->id }}">
             <input type="hidden" name="address_from" value="{{ $product->address_from }}">
@@ -26,7 +28,7 @@
                 <label for="destination">Destination City:</label>
                 <select class="form-control" id="destination" name="destination">
                     @foreach ($cities as $city)
-                        <option value="{{ $city['city_name'] }}">{{ $city['city_name'] }}</option>
+                        <option value="{{ $city['city_id'] }}">{{ $city['city_name'] }}</option>
                     @endforeach
                 </select>
             </div>

@@ -21,7 +21,7 @@
                             @method('DELETE')
                             <button type="submit" class="btn btn-danger" onclick="return confirm('Are you sure?')">Delete
                                 Product</button>
-                        </form> 
+                        </form>
                         {{-- <form action="{{ route('orders.checkout', $product->id) }}" method="POST" style="display:inline;">
                             @csrf
                             <button type="submit" class="btn btn-primary">Order</button>

@@ -31,11 +31,9 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/product', [ProductController::class, 'index'])->name('product.index');
     Route::get('/products/{product}', [ProductController::class, 'show'])->name('products.show');
 
-    Route::resource('/orders', OrderController::class);
-
-    Route::post('/orders/add-to-cart/{product}', [OrderController::class, 'addToCart'])->name('orders.add_to_cart');
-    Route::post('/orders/checkout/{product}', [OrderController::class, 'checkout'])->name('orders.checkout');
-    Route::get('/orders/ongkir', [OrderController::class, 'ongkir'])->name('orders.ongkir');
-    Route::post('/orders/hitung_ongkir', [OrderController::class, 'hitungOngkir'])->name('orders.hitung_ongkir');
-    Route::get('orders.payment', [OrderController::class, 'payment'])->name('orders.payment');
+    Route::get('/orders/checkout/{product}', [OrderController::class, 'checkout'])->name('orders.checkout');
+    Route::post('/orders/payment', [OrderController::class, 'payment'])->name('orders.payment');
+    Route::post('/order/store', [OrderController::class, 'store'])->name('order.store');
+    Route::get('/orders/{order}', [OrderController::class, 'show'])->name('orders.show');
+    Route::get('/orders', [OrderController::class, 'index'])->name('orders.index');
 });

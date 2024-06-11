@@ -32,7 +32,7 @@
                             <label for="address_from">Asal Kota</label>
                             <select name="address_from" class="form-control">
                                 @foreach($cities as $city)
-                                    <option value="{{ $city['city_name'] }}">{{ $city['city_name'] }}</option>
+                                    <option value="{{ $city['city_id'] }}">{{ $city['city_name'] }}</option>
                                 @endforeach
                             </select>
                         </div>

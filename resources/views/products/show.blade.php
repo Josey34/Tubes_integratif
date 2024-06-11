@@ -14,7 +14,7 @@
                         <p>Weight: {{ $product->weight }}</p>
                         <p>Address from: {{ $product->address_from }}</p> <!-- This will display the city name -->
                         <p>Stock: {{ $product->stock }}</p>
-                        <form action="{{ route('orders.checkout', $product->id) }}" method="POST" style="display:inline;">
+                        <form action="{{ route('orders.checkout', $product->id) }}" method="GET" style="display:inline;">
                             @csrf
                             <button type="submit" class="btn btn-primary">Order</button>
                         </form>
