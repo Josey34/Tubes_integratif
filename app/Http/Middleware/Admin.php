@@ -19,7 +19,7 @@ class Admin
     {
         if (!Auth::check() || Auth::user()->is_admin == false)
         {
-            return Redirect::route('products.index');
+            return Redirect::route('home');
         }
         return $next($request);
     }
