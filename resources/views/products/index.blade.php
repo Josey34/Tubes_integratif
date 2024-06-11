@@ -13,14 +13,9 @@
                                 <img src="{{ url('/storage/' . $product->image) }}" alt="Card image cap" class="card-img-top">
                                 <div class="card-body">
                                     <p class="card-text">{{ $product->product_name }}</p>
-                                    <form action="{{ route('product.show', $product->id) }}" method="GET">
+                                    <form action="/products/{{ $product->id }}" method="GET">
                                         @csrf
                                         <button type="submit" class="btn btn-primary">Show Detail</button>
-                                    </form>
-                                    <form action="{{ route('product.destroy', $product->id) }}" method="POST">
-                                        @method('DELETE')
-                                        @csrf
-                                        <button type="submit" class="btn btn-danger mt-2">Delete Product</button>
                                     </form>
                                 </div>
                             </div>

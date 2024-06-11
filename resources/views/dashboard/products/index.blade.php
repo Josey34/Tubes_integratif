@@ -13,7 +13,7 @@
         @endif
 
         <div class="table-responsive col-lg-8">
-            <a href="/dashboard/products/create" class="btn btn-primary mb-3">Create new product</a>
+            <a href="{{ route('dashboard.create') }}" class="btn btn-primary mb-3">Create new product</a>
             <table class="table table-striped table-sm">
                 <thead>
                     <tr>
@@ -30,15 +30,12 @@
                             <td>{{ $product->product_name }}</td>
                             <td>{{ $product->price }}</td>
                             <td>
-                                <a href="/dashboard/products/{{ $product->id }}" class="badge bg-info"><i
-                                        class="bi bi-eye"></i> </a>
-                                <a href="/dashboard/products/{{ $product->id }}/edit" class="badge bg-warning"><i
-                                        class="bi bi-pencil-fill"></i> </a>
-                                <form action="/dashboard/products/{{ $product->id }}" method="POST" class="d-inline">
+                                <a href="{{ route('dashboard.show', $product->id) }}" class="badge bg-info"><i class="bi bi-eye"></i></a>
+                                <a href="{{ route('dashboard.edit', $product->id) }}" class="badge bg-warning"><i class="bi bi-pencil-fill"></i></a>
+                                <form action="{{ route('dashboard.destroy', $product->id) }}" method="POST" class="d-inline">
                                     @method('delete')
                                     @csrf
-
-                                    <button class="badge bg-danger border-0" onclick="return confirm('Are your sure?')"><i class="bi bi-x-circle"></i> </button>
+                                    <button class="badge bg-danger border-0" onclick="return confirm('Are you sure?')"><i class="bi bi-x-circle"></i></button>
                                 </form>
                             </td>
                         </tr>

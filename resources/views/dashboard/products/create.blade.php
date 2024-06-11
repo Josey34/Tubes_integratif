@@ -10,7 +10,7 @@
                 <div class="card-header">{{ __('Create Product') }}</div>
 
                 <div class="card-body">
-                    <form action="/product" method="POST" enctype="multipart/form-data">
+                    <form action="{{ route('dashboard.store') }}" method="POST" enctype="multipart/form-data">
                         @csrf
                         <div class="form-group">
                             <label for="">Product Name</label>

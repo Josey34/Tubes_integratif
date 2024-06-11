@@ -10,7 +10,7 @@
             <ul class="nav flex-column">
                 <li class="nav-item">
                     <a class="nav-link d-flex align-items-center gap-2 {{ Request::is('dashboard') ? 'active' : '' }}" aria-current="page"
-                        href="/product">
+                        href="/dashboard">
                         <i class="bi bi-house-door d-flex align-items-center"></i>
                         Dashboard
                     </a>
@@ -18,7 +18,7 @@
                 <li class="nav-item">
                     <a class="nav-link d-flex align-items-center gap-2" href="/dashboard/products">
                         <i class="bi bi-file-text-fill d-flex align-items-center"></i>
-                        Products
+                        Orders
                     </a>
                 </li>
             </ul>

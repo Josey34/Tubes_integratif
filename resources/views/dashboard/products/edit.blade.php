@@ -15,7 +15,7 @@
             </div>
         @endif
 
-        <form action="{{ route('product.update', $product->id) }}" method="POST" enctype="multipart/form-data">
+        <form action="{{ route('dashboard.update', $product->id) }}" method="POST" enctype="multipart/form-data">
             @csrf
             @method('PUT')
 
@@ -72,7 +72,7 @@
             </div>
 
             <button type="submit" class="btn btn-primary">Update Product</button>
-            <a href="{{ route('product.index') }}" class="btn btn-secondary">Cancel</a>
+            <a href="{{ route('dashboard.index') }}" class="btn btn-secondary">Cancel</a>
         </form>
     </div>
 </main>

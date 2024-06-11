@@ -7,16 +7,8 @@ use App\Models\Product;
 
 class HomeController extends Controller
 {
-    public function home()
+    public function index()
     {
         return view('index');
     }
-
-    public function index()
-    {
-        $products = Product::all();
-        return view('products.index', compact('products'));
-    }
-
-
 }
