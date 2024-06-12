@@ -2,6 +2,15 @@
 
 @section('container')
     <div class="container">
+        @if ($errors->any())
+        <div class="alert alert-danger">
+            <ul>
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+    @endif
         <h1>Payment</h1>
 
         <div class="card m-3" style="width: 18rem;">
@@ -37,5 +46,9 @@
             <input type="hidden" name="payment" value="0"> <!-- Example payment method -->
             <button type="submit" class="btn btn-primary">Submit Order</button>
         </form>
+
+        @if ($product->stock == 0 )
+        <p>Stock Habis</p>
+    @endif
     </div>
 @endsection

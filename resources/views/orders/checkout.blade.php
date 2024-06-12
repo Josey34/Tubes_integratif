@@ -5,6 +5,18 @@
 @section('container')
     <div class="container">
         <h1>Checkout</h1>
+
+        <!-- Display error messages -->
+        @if ($errors->any())
+            <div class="alert alert-danger">
+                <ul>
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
+
         <div class="card m-3" style="width: 18rem;">
             <img src="{{ url('/storage/' . $product->image) }}" alt="Card image cap" class="card-img-top">
             <div class="card-body">
@@ -34,9 +46,9 @@
             </div>
 
             <div class="form-group">
-                <label for="courier">Kurir</label>
+                <label for="courier">Courier</label>
                 <select name="courier" id="courier" class="form-control" required>
-                    <option value="">Pilih Kurir</option>
+                    <option value="">Select Courier</option>
                     <option value="jne">JNE</option>
                     <option value="pos">POS</option>
                     <option value="tiki">TIKI</option>
@@ -45,8 +57,7 @@
 
             <div class="form-group">
                 <label for="quantity">Quantity:</label>
-                <input type="number" class="form-control" id="quantity" name="quantity"
-                    value="{{ $order->quantity ?? 1 }}">
+                <input type="number" class="form-control" id="quantity" name="quantity" value="1" min="1">
             </div>
 
             <button type="submit" class="btn btn-primary">Order</button>
