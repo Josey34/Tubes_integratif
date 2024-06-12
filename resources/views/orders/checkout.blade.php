@@ -6,17 +6,6 @@
     <div class="container">
         <h1>Checkout</h1>
 
-        <!-- Display error messages -->
-        @if ($errors->any())
-            <div class="alert alert-danger">
-                <ul>
-                    @foreach ($errors->all() as $error)
-                        <li>{{ $error }}</li>
-                    @endforeach
-                </ul>
-            </div>
-        @endif
-
         <div class="card m-3" style="width: 18rem;">
             <img src="{{ url('/storage/' . $product->image) }}" alt="Card image cap" class="card-img-top">
             <div class="card-body">
