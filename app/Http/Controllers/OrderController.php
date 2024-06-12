@@ -1,11 +1,12 @@
 <?php
+
 namespace App\Http\Controllers;
 
 use App\Models\Order;
 use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\DB;
 
 class OrderController extends Controller
 {
@@ -31,25 +32,20 @@ class OrderController extends Controller
     {
         $product = Product::find($request['product_id']);
 
-        // Ensure $product is retrieved successfully
         if (!$product) {
-            // Handle error if product is not found
             abort(404, 'Product not found');
         }
 
-        // Perform request to RajaOngkir API to get shipping services and costs
         $response = Http::withHeaders([
             'key' => '7b56cec1d370390a4028d16c89d266d9'
         ])->post('https://api.rajaongkir.com/starter/cost', [
-                    'origin' => $request['address_from'],
-                    'destination' => $request['destination'],
-                    'weight' => $request['weight'],
-                    'courier' => $request['courier'],
-                ]);
+            'origin' => $request['address_from'],
+            'destination' => $request['destination'],
+            'weight' => $request['weight'],
+            'courier' => $request['courier'],
+        ]);
 
         $services = [];
-        $shippingCosts = 0;
-
         $responseData = $response->json();
 
         if (isset($responseData['rajaongkir']['results'])) {
@@ -58,10 +54,9 @@ class OrderController extends Controller
                     $services[] = [
                         'service' => $cost['service'],
                         'description' => $cost['description'],
-                        'cost' => $cost['cost'][0]['value'], // Assuming only one cost is returned
-                        'etd' => $cost['cost'][0]['etd'], // Estimated time of delivery
+                        'cost' => $cost['cost'][0]['value'],
+                        'etd' => $cost['cost'][0]['etd'],
                     ];
-                    // $shippingCosts += $cost['cost'][0]['value'];
                 }
             }
         }
@@ -73,7 +68,7 @@ class OrderController extends Controller
 
         $courier = $request['courier'];
 
-        return view('orders.payment', compact('product', 'services', 'shippingCosts', 'total', 'courier'));
+        return view('orders.payment', compact('product', 'services', 'total', 'courier'));
     }
 
     public function store(Request $request)
@@ -87,18 +82,34 @@ class OrderController extends Controller
             'payment' => 'required|string',
         ]);
 
-        $order = Order::create([
-            'user_id' => auth()->id(),
-            'product_id' => $request->product_id,
-            'address_to' => $request->address_to,
-            'courier' => $request->courier,
-            'quantity' => $request->quantity,
-            'total' => $request->total,
-            'payment' => $request->payment,
-            'status' => false,
-        ]);
+        $product = Product::findOrFail($request->product_id);
 
-        return redirect()->route('orders.show', $order)->with('success', 'Order placed successfully!');
+        if ($product->stock < $request->quantity) {
+            return back()->withErrors(['quantity' => 'Insufficient stock available.']);
+        }
+
+        $order = null;
+        DB::transaction(function () use ($request, $product, &$order) {
+            $order = Order::create([
+                'user_id' => auth()->id(),
+                'product_id' => $request->product_id,
+                'address_to' => $request->address_to,
+                'courier' => $request->courier,
+                'quantity' => $request->quantity,
+                'total' => $request->total,
+                'payment' => $request->payment,
+                'status' => false,
+            ]);
+
+            $product->decrement('stock', $request->quantity);
+        });
+
+        // Check if the order was created
+        if ($order) {
+            return redirect()->route('orders.show', $order->id)->with('success', 'Order placed successfully!');
+        }
+
+        return back()->withErrors(['order' => 'Order could not be created. Please try again.']);
     }
 
     public function show(Order $order)
@@ -111,5 +122,4 @@ class OrderController extends Controller
         $orders = Order::where('user_id', auth()->id())->get();
         return view('orders.index', compact('orders'));
     }
-
 }
