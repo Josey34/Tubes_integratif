@@ -21,6 +21,10 @@ Follow these steps to set up and run the project:
     ```
     php artisan migrate --seed
     ```
+5. Run Storage link
+    ```
+    php artisan storage:link
+    ```
 5. Write in .env
     ```
     FILESYSTEM_DISK = public
