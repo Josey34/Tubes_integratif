@@ -41,7 +41,7 @@ class DashboardController extends Controller
         ]);
 
         if ($request->file('image')) {
-            $validateData['image'] = $request->file('image')->store('post-images');
+            $validateData['image'] = $request->file('image')->store('/post-images');
         }
 
         Product::create($validateData);

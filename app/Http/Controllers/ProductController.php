@@ -18,7 +18,7 @@ class ProductController extends Controller
         }
 
         // Paginate the filtered results
-        $products = $products->paginate(3); // Change the number as per your requirement
+        $products = $products->paginate(4); // Change the number as per your requirement
 
         return view('products.index', compact('products', 'search'));
     }
