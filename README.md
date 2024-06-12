@@ -29,8 +29,25 @@ Follow these steps to set up and run the project:
     ```
     FILESYSTEM_DISK = public
     ```
+6. Install sanctum
+    ```
+    php artisan install:api
+    ```
+    or
+    ```
+    composer require laravel/sanctum
+    ```
+7. Publish the sanctum configuration
+    ```
+    php artisan vendor:publish --provider="Laravel\Sanctum\SanctumServiceProvider"
 
-6. Start the development server:
+    ```
+8. Run migration again
+    ```
+    php artisan migrate
+    ```
+
+9. Start the development server:
     ```
     php artisan serve
     ```
