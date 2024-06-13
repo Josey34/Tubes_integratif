@@ -15,7 +15,7 @@ class OrderController extends Controller
         $product = Product::findOrFail($productId);
 
         $response = Http::withHeaders([
-            'key' => '7b56cec1d370390a4028d16c89d266d9'
+            'key' => env('API_RAJA_ONGKIR')
         ])->get('https://api.rajaongkir.com/starter/city');
         $cities = [];
         if ($response->successful()) {
@@ -37,7 +37,7 @@ class OrderController extends Controller
         }
 
         $response = Http::withHeaders([
-            'key' => '7b56cec1d370390a4028d16c89d266d9'
+            'key' => env('API_RAJA_ONGKIR')
         ])->post('https://api.rajaongkir.com/starter/cost', [
             'origin' => $request['address_from'],
             'destination' => $request['destination'],
