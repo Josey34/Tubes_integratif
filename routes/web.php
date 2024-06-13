@@ -1,17 +1,18 @@
 <?php
 
-use App\Http\Controllers\DashboardController;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\WAController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\NewsController;
 use App\Http\Controllers\LoginController;
+
 use App\Http\Controllers\OrderController;
+use App\Http\Controllers\PaymentController;
+
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\RegisterController;
-
-use App\Http\Controllers\WAController;
-use App\Http\Controllers\NewsController;
-
-use Illuminate\Support\Facades\Route;
-use Illuminate\Http\Request;
+use App\Http\Controllers\DashboardController;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
 
@@ -37,7 +38,8 @@ Route::middleware(['auth:sanctum'])->group(function () {
         Route::put('/dashboard/{product}', [DashboardController::class, 'update'])->name('dashboard.update');
         Route::delete('/dashboard/{product}', [DashboardController::class, 'destroy'])->name('dashboard.destroy');
     });
-  
+});
+
 Route::get('/product', [ProductController::class, 'index'])->name('product.index');
 Route::get('/products/{product}', [ProductController::class, 'show'])->name('products.show');
 
@@ -45,11 +47,10 @@ Route::middleware(['auth'])->group(function () {
     // Route::get('/product', [ProductController::class, 'index'])->name('product.index');
     // Route::get('/products/{product}', [ProductController::class, 'show'])->name('products.show');
 
+    Route::get('/order/store', [OrderController::class, 'store'])->name('order.store');
+    Route::get('/orders/{order}', [OrderController::class, 'show'])->name('orders.show');
     Route::get('/orders/checkout/{product}', [OrderController::class, 'checkout'])->name('orders.checkout');
     Route::post('/orders/payment', [OrderController::class, 'payment'])->name('orders.payment');
-    Route::post('/order/store', [OrderController::class, 'store'])->name('order.store');
-    Route::get('/orders/{order}', [OrderController::class, 'show'])->name('orders.show');
-    Route::get('/orders', [OrderController::class, 'index'])->name('orders.index');
 });
 
 Route::get('/customer-service', [WAController::class, 'index'])->name('customer.service');
