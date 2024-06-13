@@ -59,6 +59,5 @@
                 <p>Stock Habis</p>
             @endif
         </div>
-
     </main>
 @endsection

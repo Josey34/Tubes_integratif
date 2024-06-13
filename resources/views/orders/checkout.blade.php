@@ -32,7 +32,6 @@
                 <input type="hidden" name="address_from" value="{{ $product->address_from }}">
                 <input type="hidden" name="weight" value="{{ $product->weight }}">
 
-
                 <div class="mt-4">
                     <label for="destination" class="text-xl text-gray-800 font-semibold capitalize mb-1">Pilih
                         Destinasi</label><br>

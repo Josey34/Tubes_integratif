@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use App\Models\User;
 
 class LoginController extends Controller
 {
@@ -11,35 +12,30 @@ class LoginController extends Controller
     {
         return view('login.index');
     }
-
     public function authenticate(Request $request)
     {
         $credentials = $request->validate([
-            'email' => 'required',
-            'password' => 'required'
+            'email' => 'required|email',
+            'password' => 'required',
         ]);
 
         if (Auth::attempt($credentials)) {
-            $request->session()->regenerate();
 
+            $token = $request->user()->createToken('auth_token')->plainTextToken;
 
-            if (Auth::user()->is_admin) {
-                return redirect()->intended('/dashboard');
-            }
-
-            return redirect()->intended('/');
+            return redirect('/');
         }
-        return back()->with('loginError', 'Login failed!');
+
+        return response()->json(['message' => 'Invalid credentials'], 401);
     }
 
     public function logout(Request $request)
     {
+        $user = $request->user();
+        $user->tokens()->delete();
+
         Auth::logout();
-
-        $request->session()->invalidate();
-
-        $request->session()->regenerateToken();
-
+        
         return redirect('/');
     }
 }

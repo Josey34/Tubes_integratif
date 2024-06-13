@@ -22,11 +22,6 @@
                             <p class="card-text">Quantity: {{ $order->quantity }}</p>
                             <p class="card-text">Total: Rp. {{ $order->total }}</p>
                         </div>
-                        <form action="{{ route('orders.checkout', $order->product->id) }}" method="POST"
-                            class="d-flex justify-content-center">
-                            @csrf
-                            <button type="submit" class="btn btn-primary">Proceed to Checkout</button>
-                        </form>
                     </div>
                 </div>
             @empty
