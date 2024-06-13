@@ -47,10 +47,13 @@ Route::middleware(['auth'])->group(function () {
     // Route::get('/product', [ProductController::class, 'index'])->name('product.index');
     // Route::get('/products/{product}', [ProductController::class, 'show'])->name('products.show');
 
-    Route::get('/order/store', [OrderController::class, 'store'])->name('order.store');
-    Route::get('/orders/{order}', [OrderController::class, 'show'])->name('orders.show');
+    Route::post('/order/store', [OrderController::class, 'store'])->name('order.store');
+
     Route::get('/orders/checkout/{product}', [OrderController::class, 'checkout'])->name('orders.checkout');
     Route::post('/orders/payment', [OrderController::class, 'payment'])->name('orders.payment');
+    Route::get('/orders/{order}', [OrderController::class, 'show'])->name('orders.show');
+
+    Route::get('/order/status', [OrderController::class, 'status'])->name('orders.status');
 });
 
 Route::get('/customer-service', [WAController::class, 'index'])->name('customer.service');

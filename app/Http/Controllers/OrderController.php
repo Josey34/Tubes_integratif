@@ -8,6 +8,9 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\DB;
 
+use GuzzleHttp\Client;
+use GuzzleHttp\Exception\RequestException;
+
 class OrderController extends Controller
 {
     public function checkout(Request $request, $productId)
@@ -39,11 +42,11 @@ class OrderController extends Controller
         $response = Http::withHeaders([
             'key' => env('API_RAJA_ONGKIR')
         ])->post('https://api.rajaongkir.com/starter/cost', [
-            'origin' => $request['address_from'],
-            'destination' => $request['destination'],
-            'weight' => $request['weight'],
-            'courier' => $request['courier'],
-        ]);
+                    'origin' => $request['address_from'],
+                    'destination' => $request['destination'],
+                    'weight' => $request['weight'],
+                    'courier' => $request['courier'],
+                ]);
 
         $services = [];
         $responseData = $response->json();
@@ -74,6 +77,7 @@ class OrderController extends Controller
     public function store(Request $request)
     {
         $request->validate([
+            'product_name' => 'required',
             'product_id' => 'required|exists:products,id',
             'address_to' => 'required|string',
             'courier' => 'required|string',
@@ -89,27 +93,116 @@ class OrderController extends Controller
         }
 
         $order = null;
-        DB::transaction(function () use ($request, $product, &$order) {
-            $order = Order::create([
-                'user_id' => auth()->id(),
-                'product_id' => $request->product_id,
-                'address_to' => $request->address_to,
-                'courier' => $request->courier,
-                'quantity' => $request->quantity,
-                'total' => $request->total,
-                'payment' => $request->payment,
-                'status' => false,
+        // DB::transaction(function () use ($request, $product, &$order) {
+        //     $order = Order::create([
+        //         'user_id' => auth()->id(),
+        //         'product_id' => $request->product_id,
+        //         'address_to' => $request->address_to,
+        //         'courier' => $request->courier,
+        //         'quantity' => $request->quantity,
+        //         'total' => $request->total,
+        //         'payment' => $request->payment,
+        //         'status' => false,
+        //     ]);
+
+        //     $product->decrement('stock', $request->quantity);
+        // });
+
+        $va = '0000003192777446';
+        $apiKey = 'SANDBOX40CB882E-B91F-4E2A-BCA9-AF9C0D7A0BB9';
+        $url = 'https://sandbox.ipaymu.com/api/v2/payment';
+        $method = 'POST';
+
+        $products = (array) $request->product_name;
+        $quantities = (array) $request->quantity;
+        $prices = (array) $request->total;
+
+        $body = [
+            'product' => $products,
+            'qty' => $quantities,
+            'price' => $prices,
+            'returnUrl' => 'http://127.0.0.1:8001/order/status',
+            'notifyUrl' => $request->input('notifyUrl', 'http://example.com/notify'),
+            'cancelUrl' => $request->input('cancelUrl', 'http://example.com/cancel'),
+            'referenceId' => $request->input('referenceId', 'default_reference')
+        ];
+
+        $jsonBody = json_encode($body, JSON_UNESCAPED_SLASHES);
+        $requestBody = strtolower(hash('sha256', $jsonBody));
+        $stringToSign = strtoupper($method) . ':' . $va . ':' . $requestBody . ':' . $apiKey;
+        $signature = hash_hmac('sha256', $stringToSign, $apiKey);
+        $timestamp = now()->format('YmdHis');
+
+        $client = new Client();
+        $headers = [
+            'Accept' => 'application/json',
+            'Content-Type' => 'application/json',
+            'va' => $va,
+            'signature' => $signature,
+            'timestamp' => $timestamp
+        ];
+
+        try {
+            $response = $client->request('POST', $url, [
+                'headers' => $headers,
+                'body' => $jsonBody
             ]);
+            $ret = json_decode($response->getBody()->getContents());
 
-            $product->decrement('stock', $request->quantity);
-        });
+            if ($ret && $ret->Status == 200) {
+                $sessionId = $ret->Data->SessionID;
+                // dd($sessionId);
+                $paymentUrl = $ret->Data->Url;
 
-        // Check if the order was created
-        if ($order) {
-            return redirect()->route('orders.show', $order->id)->with('success', 'Order placed successfully!');
+                DB::transaction(function () use ($request, $product, &$order, $sessionId) {
+                    // dd($sessionId);
+                    $order = Order::create([
+                        'user_id' => auth()->id(),
+                        'product_id' => $request->product_id,
+                        'payment_id' => $sessionId,
+                        'address_to' => $request->address_to,
+                        'courier' => $request->courier,
+                        'quantity' => $request->quantity,
+                        'total' => $request->total,
+                        'payment' => $request->payment,
+                        'status' => false,
+                    ]);
+        
+                    $product->decrement('stock', $request->quantity);
+                });
+
+                return redirect($paymentUrl);
+            } else {
+                return back()->withErrors(['payment' => 'Payment initiation failed. Please try again.'])->with('response', $ret);
+            }
+        } catch (RequestException $e) {
+            return back()->withErrors(['payment' => 'HTTP Request Error: ' . $e->getMessage()]);
         }
 
-        return back()->withErrors(['order' => 'Order could not be created. Please try again.']);
+
+        // // Check if the order was created
+        // if ($order) {
+        //     return redirect()->route('orders.show', $order->id)->with('success', 'Order placed successfully!');
+        // }
+
+        // return back()->withErrors(['order' => 'Order could not be created. Please try again.']);
+    }
+
+    public function status(Request $request)
+    {
+        $sid = $request['sid'];
+        $status = ($_REQUEST['status'] == 'berhasil') ? '1' : '0';
+        $payment_method = $request['payment_method'];
+
+        $order = Order::where('payment_id', $sid)->firstOrFail();
+
+        $order->payment_id = $sid;
+        $order->status = $status;
+        $order->payment_method = $payment_method;
+
+        $order->save();
+
+        return redirect('/');
     }
 
     public function show(Order $order)
@@ -122,4 +215,5 @@ class OrderController extends Controller
         $orders = Order::where('user_id', auth()->id())->get();
         return view('orders.index', compact('orders'));
     }
+
 }
