@@ -25,7 +25,24 @@ class LoginController extends Controller
 
             return redirect('/');
         }
+        return response()->json(['message' => 'Invalid credentials'], 401);
+    }
 
+    public function getToken(Request $request)
+    {
+        $credentials = $request->validate([
+            'email' => 'required|email',
+            'password' => 'required',
+        ]);
+
+        if (Auth::attempt($credentials)) {
+
+            $token = $request->user()->createToken('auth_token')->plainTextToken;
+            return response()->json([
+                'success' => 'true',
+                'token' => $token
+            ]);
+        }
         return response()->json(['message' => 'Invalid credentials'], 401);
     }
 
@@ -35,7 +52,7 @@ class LoginController extends Controller
         $user->tokens()->delete();
 
         Auth::logout();
-        
+
         return redirect('/');
     }
 }

@@ -45,6 +45,8 @@
             @endif
             <form action="{{ route('order.store') }}" method="POST">
                 @csrf
+                
+                <input type="hidden" name="product_name" value="{{ $product['product_name'] }}">
                 <input type="hidden" name="product_id" value="{{ $product->id }}">
                 <input type="hidden" name="address_from" value="{{ $product->address_from }}">
                 <input type="hidden" name="address_to" value="{{ request('destination') }}">
@@ -52,6 +54,11 @@
                 <input type="hidden" name="quantity" value="{{ request('quantity') }}">
                 <input type="hidden" name="total" value="{{ $total }}">
                 <input type="hidden" name="payment" value="0"> <!-- Example payment method -->
+
+                <input type="hidden" name="returnUrl" value="http://127.0.0.1:8001/order/status">
+                <input type="hidden" name="cancelUrl" value="https://your-website.com/cancel-page">
+                <input type="hidden" name="notifyUrl" value="https://your-website.com/callback-url">
+
                 <button type="submit"
                     class="px-6 py-3 w-full bg-green-600 text-white rounded-lg hover:bg-green-800 text-xl font-semibold mt-10">Pembayaran</button>
             </form>

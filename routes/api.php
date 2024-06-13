@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Http\Request;
 
 Route::post('/register', [RegisterController::class, 'store'])->name('store_register');
-Route::post('/login', [LoginController::class, 'authenticate'])->name('authenticate');
+Route::post('/getToken', [LoginController::class, 'getToken'])->name('authenticate');
 Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 
 // Group routes that require authentication

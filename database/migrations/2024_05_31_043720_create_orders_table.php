@@ -15,6 +15,8 @@ return new class extends Migration
             $table->id();
             $table->foreignId('user_id')->constrained('users')->cascadeOnUpdate()->cascadeOnDelete();
             $table->foreignId('product_id')->constrained('products')->cascadeOnUpdate()->cascadeOnDelete();
+            $table->string('payment_id')->nullable();
+            $table->string('payment_method')->nullable();
             $table->string('address_to');
             $table->string('courier');
             $table->integer('quantity');
