@@ -20,6 +20,7 @@ class LoginController extends Controller
         ]);
 
         if (Auth::attempt($credentials)) {
+
             $token = $request->user()->createToken('auth_token')->plainTextToken;
 
             return redirect('/');
