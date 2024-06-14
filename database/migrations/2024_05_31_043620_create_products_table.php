@@ -19,7 +19,7 @@ return new class extends Migration
             $table->integer('weight');
             $table->string('address_from');
             $table->integer('stock');
-            $table->string('image');
+            $table->string('image')->nullable();
             $table->timestamps();
         });
     }

@@ -77,6 +77,7 @@ class OrderController extends Controller
     public function store(Request $request)
     {
         $request->validate([
+            'price' => 'required',
             'product_name' => 'required',
             'product_id' => 'required|exists:products,id',
             'address_to' => 'required|string',
@@ -108,14 +109,14 @@ class OrderController extends Controller
         //     $product->decrement('stock', $request->quantity);
         // });
 
-        $va = '0000003192777446';
-        $apiKey = 'SANDBOX40CB882E-B91F-4E2A-BCA9-AF9C0D7A0BB9';
+        $va = '0000002245111828';
+        $apiKey = 'SANDBOXEAF3FDF6-77DC-45C6-8486-76CF245B070D';
         $url = 'https://sandbox.ipaymu.com/api/v2/payment';
         $method = 'POST';
 
         $products = (array) $request->product_name;
         $quantities = (array) $request->quantity;
-        $prices = (array) $request->total;
+        $prices = (array) $request->price;
 
         $body = [
             'product' => $products,
