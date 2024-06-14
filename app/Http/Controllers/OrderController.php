@@ -76,6 +76,7 @@ class OrderController extends Controller
 
     public function store(Request $request)
     {
+        // validasi data dari halaman sebelumnya
         $request->validate([
             'price' => 'required',
             'product_name' => 'required',
@@ -87,37 +88,29 @@ class OrderController extends Controller
             'payment' => 'required|string',
         ]);
 
+        // bakal mencari produk
         $product = Product::findOrFail($request->product_id);
 
+        // cek apakah stock nya cukup
         if ($product->stock < $request->quantity) {
             return back()->withErrors(['quantity' => 'Insufficient stock available.']);
         }
 
         $order = null;
-        // DB::transaction(function () use ($request, $product, &$order) {
-        //     $order = Order::create([
-        //         'user_id' => auth()->id(),
-        //         'product_id' => $request->product_id,
-        //         'address_to' => $request->address_to,
-        //         'courier' => $request->courier,
-        //         'quantity' => $request->quantity,
-        //         'total' => $request->total,
-        //         'payment' => $request->payment,
-        //         'status' => false,
-        //     ]);
 
-        //     $product->decrement('stock', $request->quantity);
-        // });
-
+        // konfigurasi untuk ipaymu
         $va = '0000002245111828';
         $apiKey = 'SANDBOXEAF3FDF6-77DC-45C6-8486-76CF245B070D';
         $url = 'https://sandbox.ipaymu.com/api/v2/payment';
+        // untuk kirim data
         $method = 'POST';
 
+        // untuk detail barang
         $products = (array) $request->product_name;
-        $quantities = (array) $request->quantity;
-        $prices = (array) $request->price;
+        $quantities = (array) 1;
+        $prices = (array) $request->total;
 
+        // ini akan dikirim ke ipaymu
         $body = [
             'product' => $products,
             'qty' => $quantities,
@@ -155,6 +148,7 @@ class OrderController extends Controller
                 // dd($sessionId);
                 $paymentUrl = $ret->Data->Url;
 
+                // update database local
                 DB::transaction(function () use ($request, $product, &$order, $sessionId) {
                     // dd($sessionId);
                     $order = Order::create([
@@ -168,7 +162,7 @@ class OrderController extends Controller
                         'payment' => $request->payment,
                         'status' => false,
                     ]);
-        
+
                     $product->decrement('stock', $request->quantity);
                 });
 

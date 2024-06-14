@@ -20,6 +20,7 @@ class LoginApiController extends Controller
         if (Auth::attempt($credentials)) {
 
             $token = $request->user()->createToken('auth_token')->plainTextToken;
+            session()->put('token', $token);
             return response()->json([
                 'success' => 'true',
                 'token' => $token

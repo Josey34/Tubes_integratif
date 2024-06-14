@@ -16,7 +16,7 @@ class WAController extends Controller
 
     public function redirectToWhatsApp()
     {
-        $phoneNumber = '6281337196790';
+        $phoneNumber = '6281230089797';
         $message = urlencode('Hello Admin, Saya sangat tertarik dan ingin melakukan konsultasi terkait dengan produk RooftopMart.');
         $url = "https://wa.me/{$phoneNumber}?text={$message}";
 

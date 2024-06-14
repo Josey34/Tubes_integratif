@@ -27,7 +27,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::get('/dashboard/{product}/edit', [DashboardController::class, 'edit'])->name('dashboard.edit');
     Route::put('/dashboard/{product}', [DashboardController::class, 'update'])->name('dashboard.update');
     Route::delete('/dashboard/{product}', [DashboardController::class, 'destroy'])->name('dashboard.destroy');
-
+    
     Route::get('/products', [ProductApiController::class, 'index'])->name('product.index');
     Route::post('/products', [ProductApiController::class, 'store'])->name('product.store');
 

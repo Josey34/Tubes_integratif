@@ -10,7 +10,7 @@
             penanaman dilakukan seperti membesarkan anak sendiri.
         </p>
         <div class="mt-10 flex justify-center">
-            <a href="#product-start"
+            <a href="{{ route('product.index') }}"
                 class="px-6 py-3 bg-green-600 text-white rounded-lg hover:bg-green-800 text-xl font-semibold">Mulai
                 Belanja Sekarang</a>
         </div>
