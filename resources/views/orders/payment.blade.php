@@ -43,9 +43,11 @@
             @else
                 <p>No shipping services found.</p>
             @endif
+            
             <form action="{{ route('order.store') }}" method="POST">
                 @csrf
                 
+                <input type="hidden" name="price" value="{{ $product['price'] }}">
                 <input type="hidden" name="product_name" value="{{ $product['product_name'] }}">
                 <input type="hidden" name="product_id" value="{{ $product->id }}">
                 <input type="hidden" name="address_from" value="{{ $product->address_from }}">

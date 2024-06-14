@@ -1,5 +1,8 @@
 <?php
 
+use App\Http\Controllers\api\LoginApiController;
+use App\Http\Controllers\api\ProductApiController;
+use App\Http\Controllers\api\RegisterApiController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\ProductController;
@@ -8,9 +11,8 @@ use App\Http\Controllers\LoginController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Http\Request;
 
-Route::post('/register', [RegisterController::class, 'store'])->name('store_register');
-Route::post('/getToken', [LoginController::class, 'getToken'])->name('authenticate');
-Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
+Route::post('/register', [RegisterApiController::class, 'register']);
+Route::post('/login', [LoginApiController::class, 'login'])->name('login');
 
 // Group routes that require authentication
 Route::middleware(['auth:sanctum'])->group(function () {
@@ -26,6 +28,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::put('/dashboard/{product}', [DashboardController::class, 'update'])->name('dashboard.update');
     Route::delete('/dashboard/{product}', [DashboardController::class, 'destroy'])->name('dashboard.destroy');
 
-    Route::get('/product', [ProductController::class, 'index'])->name('product.index');
+    Route::get('/products', [ProductApiController::class, 'index'])->name('product.index');
+    Route::post('/products', [ProductApiController::class, 'store'])->name('product.store');
 
-})->middleware('auth:sanctum');;
+})->middleware('auth:sanctum');

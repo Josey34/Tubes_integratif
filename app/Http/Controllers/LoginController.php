@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use App\Models\User;
+use Illuminate\Http\Request;
+use Illuminate\Routing\Controller;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Session;
 
 class LoginController extends Controller
 {
@@ -22,26 +24,9 @@ class LoginController extends Controller
         if (Auth::attempt($credentials)) {
 
             $token = $request->user()->createToken('auth_token')->plainTextToken;
+            Session::put('token', $token);
 
             return redirect('/');
-        }
-        return response()->json(['message' => 'Invalid credentials'], 401);
-    }
-
-    public function getToken(Request $request)
-    {
-        $credentials = $request->validate([
-            'email' => 'required|email',
-            'password' => 'required',
-        ]);
-
-        if (Auth::attempt($credentials)) {
-
-            $token = $request->user()->createToken('auth_token')->plainTextToken;
-            return response()->json([
-                'success' => 'true',
-                'token' => $token
-            ]);
         }
         return response()->json(['message' => 'Invalid credentials'], 401);
     }

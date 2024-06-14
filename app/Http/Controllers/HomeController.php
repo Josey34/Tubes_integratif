@@ -16,7 +16,31 @@ class HomeController extends Controller
         $newsdata = $news['results'];
 
         $products = Product::orderBy('created_at', 'desc')->take(4)->get();
-        // $products = Product::query();
+
+
+        try {
+
+            // Mengirim permintaan GET ke API
+            $token = session()->get('token');
+            ; // Ganti dengan token yang sebenarnya
+
+            $response = Http::withToken($token)->get('http://127.0.0.1:8001/api/products');
+
+            // Memeriksa apakah respons sukses
+            if ($response->successful()) {
+                // Mengambil data dari respons
+                $products = $response->json();
+                $products = $products['products']['data'];
+            } else {
+                // Menangani kesalahan respons
+                $products = [];
+                // Anda bisa menambahkan pesan kesalahan atau log disini
+            }
+        } catch (\Exception $e) {
+            // Menangani kesalahan koneksi atau permintaan
+            $products = [];
+            // Anda bisa menambahkan pesan kesalahan atau log disini
+        }
 
         return view('index', compact('newsdata', 'products'));
     }
